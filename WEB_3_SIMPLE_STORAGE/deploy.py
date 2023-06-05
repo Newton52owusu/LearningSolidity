@@ -1,8 +1,14 @@
 from solcx import compile_standard
 import json
 from web3 import Web3
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 #from solcx import install_solc
 #install_solc("0.6.0")
+
 
 #Read solidity file
 with open("./SimpleStorage.sol", "r") as file:
@@ -43,7 +49,8 @@ abi = compiled_sol["contracts"]["SimpleStorage.sol"]["SimpleStorage"]["abi"]
 w3 = Web3(Web3.HTTPProvider("http://0.0.0.0:8545"))
 chain_id = 5777
 my_address = "0x0f7D2779B436Fd5CB1489ed207944560E98882C7"
-priave_key = "0xb76f6e987c1d64c858e694f72b2127a0f06055af4b7baf283c42a06fad3a928f"
+private_key =os.getenv("PRIVATE_KEY")
+print(private_key)
 
 # Create the contract in python
 SimpleStorage = w3.eth.contract(abi=abi, bytecode=bytecode)
@@ -58,3 +65,6 @@ print(nonce)
 # 3. Send a transaction
 transaction = SimpleStorage.constructor().build_transaction({"chainid":chain_id, "from":my_address, "nonce":nonce})
 print(transaction)
+
+signed_txn = w3.eth.account.sign_transaction(transaction, private_key=private_key)
+
